@@ -86,18 +86,18 @@ class Router {
     async route(req) {
         const route = this.resolve(req)
 
-        if (route) {
+        if(route) {
             return await route.handler(req)
         }
 
         return new Response(JSON.stringify({
-            infos: "https://github.com/profiluefter/grapi"
+            infos: 'https://github.com/profiluefter/grapi',
         }), {
             status: 404,
             statusText: 'Unknown Route',
             headers: {
                 'content-type': 'application/json',
-            }
+            },
         })
     }
 
@@ -107,11 +107,11 @@ class Router {
      */
     resolve(req) {
         return this.routes.find(r => {
-            if (!r.conditions || (Array.isArray(r) && !r.conditions.length)) {
+            if(!r.conditions || (Array.isArray(r) && !r.conditions.length)) {
                 return true
             }
 
-            if (typeof r.conditions === 'function') {
+            if(typeof r.conditions === 'function') {
                 return r.conditions(req)
             }
 

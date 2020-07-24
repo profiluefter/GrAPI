@@ -1,1 +1,1 @@
-export let indexURL = "http://gram.sickinger-solutions.at/index.php"
+export let indexURL = 'http://gram.sickinger-solutions.at/index.php'

@@ -1,0 +1,15 @@
+{
+    "name": "grapi",
+    "version": "1.0.0",
+    "description": "GraM API",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write '**/*.{js,css,json,md}'"
+    },
+    "author": "Fabian <fabian.paul.gurtner@gmail.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^1.17.0"
+    }
+}

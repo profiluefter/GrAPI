@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Cloudflare
     steps:
+      - uses: actions/checkout@v2
       - name: wrangler deploy
         uses: cloudflare/wrangler-action@1.2.0
         with:

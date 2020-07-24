@@ -1,6 +1,10 @@
 name = "grapi"
 type = "webpack"
 account_id = "84d15af0c7bc7f2b1ca9eb30e6941091"
-workers_dev = false
+
+[env.dev]
+workers_dev = true
+
+[env.production]
 route = "grapi.profiluefter.me/*"
 zone_id = "aedc31f269c438a9c7284b14cc39cff5"

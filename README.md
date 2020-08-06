@@ -1,6 +1,6 @@
 # GrAPI - [GraM](http://gram.sickinger-solutions.at) API
 
-Hosted at https://grapi.profiluefter.me
+Hosted at https://grapi.profiluefter.me; More information about this project is available on the [project-page on profiluefter.me](https://profiluefter.me/projects/grapi)
 
 ## API-Documentation
 

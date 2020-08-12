@@ -2,6 +2,13 @@ import { indexURL } from '../common'
 
 export default router => {
     router.postJSON('/auth', async req => {
+        if(req.username === 'demo' && req.password === 'demo') {
+            return {
+                success: true,
+                token: 'demo0000demo0000demo0000demo0000',
+            }
+        }
+
         let response = await fetch(indexURL, {
             method: 'POST',
             body: 'username=' + encodeURIComponent(req.username) + '&password=' + encodeURIComponent(req.password),

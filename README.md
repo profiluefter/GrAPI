@@ -2,6 +2,8 @@
 
 Hosted at https://grapi.profiluefter.me; More information about this project is available on the [project-page on profiluefter.me](https://profiluefter.me/projects/grapi)
 
+There is a demo user: `demo:demo`
+
 ## API-Documentation
 
 TODO

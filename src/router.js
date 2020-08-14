@@ -91,7 +91,8 @@ class Router {
         }
 
         return new Response(JSON.stringify({
-            infos: 'https://github.com/profiluefter/grapi',
+            source: 'https://github.com/profiluefter/grapi',
+            frontend: 'https://gram.profiluefter.me'
         }), {
             status: 404,
             statusText: 'Unknown Route',

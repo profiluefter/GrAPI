@@ -1,12 +1,10 @@
 import { indexURL } from '../common'
+import { demoAuthResponse, demoPassword, demoUsername } from '../demoData'
 
 export default router => {
     router.postJSON('/auth', async req => {
-        if(req.username === 'demo' && req.password === 'demo') {
-            return {
-                success: true,
-                token: 'demo0000demo0000demo0000demo0000',
-            }
+        if(req.username === demoUsername && req.password === demoPassword) {
+            return demoAuthResponse
         }
 
         let response = await fetch(indexURL, {

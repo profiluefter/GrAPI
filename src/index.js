@@ -1,18 +1,12 @@
 import Router from './router'
 import auth from './routes/auth'
 import user from './routes/home'
+import homework from './routes/homework'
+import cross from './routes/cross'
 
 addEventListener('fetch', event => {
     event.respondWith(handleRequest(event.request))
 })
-
-function handler(request) {
-    const init = {
-        headers: { 'content-type': 'application/json' },
-    }
-    const body = JSON.stringify({ some: 'json' })
-    return new Response(body, init)
-}
 
 async function handleRequest(request) {
     if(request.method === 'OPTIONS') {
@@ -40,6 +34,8 @@ async function handleRequest(request) {
 
     auth(router)
     user(router)
+    homework(router)
+    cross(router)
 
     return await router.route(request)
 }

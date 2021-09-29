@@ -1,6 +1,7 @@
 name = "grapi"
 type = "webpack"
 account_id = "84d15af0c7bc7f2b1ca9eb30e6941091"
+compatibility_date = "2021-09-29"
 
 [env.dev]
 workers_dev = true

@@ -1,5 +1,86 @@
 import { indexURL } from '../common'
-import { demoToken, demoHomeData } from '../demoData'
+import { demoHomeData, demoToken } from '../demoData'
+
+const fullNameRegex = /<i class="ti-user"><\/i>\s*<p>(.*?)<\/p>/
+const pageRegex = /<div style="font-size: 20px; padding-bottom: 20px;" >(?<classname>.*?)<\/div>.*?Hausübungen.*?Gesamt: <\/strong>(?<hwCount>\d+)<\/div>.*?Erledigt: <\/strong>(?<hwDone>\d+)<\/div>.*?Prozent: <\/strong>(?<hwPercent>[\d.]+)%<\/div>.*?<span style="font-weight: bold; font-size: 20px;">(?<tests>.*?)Gesamtnote(?<summary>.*?)<\/table>/g
+const testRegex = /<div style="font-size: 15px; padding-bottom: 20px;" >(?<typeName>.*?)<\/div>.*?<tbody>(?<items>.*?)<\/tbody>/g
+const testItemRegex = /<tr><td >(?<name>.*?)<\/td><td >(?<reached>\d+?)<\/td><td >(?<max>\d+?)<\/td><td >(?<percent>[\d.]+?)%<\/td>(?:<td >(?<grade>\d+?)<\/td>)?<\/tr>/g
+const gradingHeadersRegex = /<th>(?<name>.*?)<\/th>/g
+const gradingItemsRegex = /<td >(?<item>.*?)<\/td>/g
+const gradingValueRegex = /(?<grade>[\d.]+) \((?<values>[\d, ]*?)\) \[(?<weight>[\d.]+)%]/
+
+function parseGradingItem(name, item) {
+    let values = item.match(gradingValueRegex).groups
+
+    return {
+        name,
+        grade: Number(values.grade),
+        values: values.values.split(', ').map(x => Number(x)),
+        weight: Number(values.weight),
+    }
+}
+
+function parseSummary(summary) {
+    let headings = Array.from(summary.matchAll(gradingHeadersRegex)).map(match => match.groups.name)
+    let items = Array.from(summary.matchAll(gradingItemsRegex)).map(match => match.groups.item)
+
+    if(headings.pop() !== 'Endnote')
+        throw new Error('Grading headers don\'t match')
+    if(headings.pop() !== 'Note')
+        throw new Error('Grading headers don\'t match')
+
+    let roundedGrade = items.pop()
+    let fineGrade = items.pop()
+
+    return {
+        items: items.map((item, i) => parseGradingItem(headings[i], item)),
+        fineGrade: Number(fineGrade),
+        roundedGrade: Number(roundedGrade),
+    }
+}
+
+function parseTestType({ typeName, items }) {
+    return {
+        typeName,
+        items: Array.from(items.matchAll(testItemRegex)).map(match => match.groups).map(item => ({
+            name: item.name,
+            reachedPoints: Number(item.reached),
+            maxPoints: Number(item.max),
+            percent: Number(item.percent),
+            grade: Number(item.grade),
+        })),
+    }
+}
+
+function parseTests(tests) {
+    return Array.from(tests.matchAll(testRegex)).map(match => match.groups).map(parseTestType)
+}
+
+function parseClassHome({ classname, hwCount, hwDone, hwPercent, tests, summary }) {
+    return {
+        name: classname,
+        homework: {
+            count: Number(hwCount),
+            done: Number(hwDone),
+            percent: Number(hwPercent),
+        },
+        tests: parseTests(tests),
+        summary: parseSummary(summary),
+    }
+}
+
+function parseHome(text) {
+    let fullNameMatch = text.match(fullNameRegex)
+    let pageMatch = text.matchAll(pageRegex)
+
+    return {
+        success: true,
+        meta: {
+            fullName: fullNameMatch[1],
+        },
+        classes: Array.from(pageMatch).map(match => match.groups).map(parseClassHome),
+    }
+}
 
 export default router => {
     router.postJSON('/home', async req => {
@@ -19,70 +100,6 @@ export default router => {
         if(!success)
             return { success: false }
 
-        //TODO: Optimize REGEX-es
-        let fullName = text.match(/<i class="ti-user"><\/i>.*<p>([\w\s]*)<\/p>.*<b class="caret"><\/b>/s)[1]
-        let className = text.match(/<div style="font-size: 20px; padding-bottom: 20px;" >([\w- ().]*)<\/div><div class="card">/)[1]
-
-        let homeworkCount = text.match(/<div style="padding-bottom: 5px;"><strong>Aufgaben Gesamt: <\/strong>(\d*)<\/div>/)[1]
-        let doneCount = text.match(/<div style="padding-bottom: 5px;"><strong>Aufgaben Erledigt: <\/strong>(\d*)<\/div>/)[1]
-        let percent = text.match(/<div style="padding-bottom: 5px;"><strong>Prozent: <\/strong>([\d.]*)%<\/div>/)[1]
-
-        homeworkCount = Number(homeworkCount)
-        doneCount = Number(doneCount)
-        percent = Number(percent)
-
-        let smuepSource = text.match(/<div style="font-size: 15px; padding-bottom: 20px;" >SMUEP<\/div>.*?<tbody>(.*?)<\/tbody>/)[1]
-        let testSource = text.match(/<div style="font-size: 15px; padding-bottom: 20px;" >Schularbeit<\/div>.*?<tbody>(.*?)<\/tbody>/)[1]
-
-        let smueps = []
-        let tests = []
-
-        let regex = /(?<=<td\s*>)(.*?)(?=<\/td>)/g
-        let smuepMatches = smuepSource.match(regex)
-        let testMatches = testSource.match(regex)
-
-        while(smuepMatches.length > 0) {
-            smueps.push({
-                name: smuepMatches.splice(0, 1)[0],
-                reached: Number(smuepMatches.splice(0, 1)[0]),
-                max: Number(smuepMatches.splice(0, 1)[0]),
-                percent: Number(smuepMatches.splice(0, 1)[0].slice(0, -1)),
-            })
-        }
-        while(testMatches.length > 0) {
-            tests.push({
-                name: testMatches.splice(0, 1)[0],
-                reached: Number(testMatches.splice(0, 1)[0]),
-                max: Number(testMatches.splice(0, 1)[0]),
-                percent: Number(testMatches.splice(0, 1)[0].slice(0, -1)),
-                grade: Number(testMatches.splice(0, 1)[0]),
-            })
-        }
-
-        let summary = text.match(/<tbody><tr><td\s?>([\w\s()[\]%,.]*?)<\/td><td\s?>([\w\s()[\]%,.]*?)<\/td><td\s?>([\w\s()[\]%,.]*?)<\/td><td\s?>([\w\s()[\]%,.]*?)<\/td><td\s?>([\w\s()[\]%,.]*?)<\/td><\/tr><\/tbody>/)
-
-        summary = { //TODO: Split up 1, 2 and 3
-            homework: summary[1],
-            smuep: summary[2],
-            tests: summary[3],
-            grade: Number(summary[4]),
-            finalGrade: Number(summary[5]),
-        }
-
-        return {
-            success: true,
-            meta: {
-                fullName,
-                className,
-            },
-            homework: {
-                all: homeworkCount,
-                done: doneCount,
-                percent: percent,
-            },
-            smueps,
-            tests,
-            summary,
-        }
+        return parseHome(text)
     })
 }

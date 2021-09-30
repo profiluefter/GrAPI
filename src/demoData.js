@@ -12,84 +12,105 @@ export const demoAuthResponse = {
 export const demoHomeData = {
     success: true,
     meta: {
-        fullName: 'Demo Nutzer',
-        className: '1a Mathematik',
+        fullName: 'Demo Account',
     },
-    homework: {
-        all: 187,
-        done: 180,
-        percent: 96.26,
-    },
-    smueps: [
+    classes: [
         {
-            name: '1. SMÜP',
-            reached: 5,
-            max: 10,
-            percent: 50,
+            shortName: '1A_Mathematik',
+            longName: 'Mathematik 1. Klasse (A Klasse)',
+            homework: {
+                count: 200,
+                done: 180,
+                percent: 90,
+            },
+            tests: [
+                {
+                    typeName: 'SMUEP',
+                    items: [
+                        {
+                            name: '1. SMÜP',
+                            reachedPoints: 4,
+                            maxPoints: 5,
+                            percent: 80,
+                            grade: null,
+                        },
+                        {
+                            name: '2. SMÜP',
+                            reachedPoints: 6,
+                            maxPoints: 10,
+                            percent: 60,
+                            grade: null,
+                        },
+                    ],
+                },
+                {
+                    typeName: 'Schularbeit',
+                    items: [
+                        {
+                            name: '1. Schularbeit',
+                            reachedPoints: 40,
+                            maxPoints: 50,
+                            percent: 80,
+                            grade: 2,
+                        },
+                        {
+                            name: '2. Schularbeit',
+                            reachedPoints: 50,
+                            maxPoints: 50,
+                            percent: 100,
+                            grade: 1,
+                        },
+                    ],
+                },
+            ],
+            summary: {
+                items: [
+                    {
+                        name: 'Hausübungen',
+                        grade: 1,
+                        values: [1],
+                        weight: 10,
+                    },
+                    {
+                        name: 'SMUEP',
+                        grade: 2.5,
+                        values: [2, 3],
+                        weight: 20,
+                    },
+                    {
+                        name: 'Schularbeit',
+                        grade: 1.5,
+                        values: [2, 1],
+                        weight: 70,
+                    },
+                ],
+                fineGrade: 1.65,
+                roundedGrade: 2,
+            },
         },
         {
-            name: '2. SMÜP',
-            reached: 10,
-            max: 10,
-            percent: 100,
-        },
-        {
-            name: '3. SMÜP',
-            reached: 9,
-            max: 10,
-            percent: 90,
-        },
-        {
-            name: '4. SMÜP',
-            reached: 17,
-            max: 30,
-            percent: 56.67,
+            shortName: '2A_Mathematik',
+            longName: 'Mathematik 2. Klasse (A Klasse)',
+            homework: {
+                count: 10,
+                done: 5,
+                percent: 50,
+            },
+            tests: [],
+            summary: {
+                items: [
+                    {
+                        name: 'Hausübungen',
+                        grade: 5,
+                        values: [5],
+                        weight: 100,
+                    },
+                ],
+                fineGrade: 5,
+                roundedGrade: 5,
+            },
         },
     ],
-    tests: [
-        {
-            name: '1. Schularbeit',
-            reached: 50,
-            max: 75,
-            percent: 66.67,
-            grade: 4,
-        },
-        {
-            name: '2. Schularbeit',
-            reached: 90,
-            max: 90,
-            percent: 100,
-            grade: 1,
-        },
-        {
-            name: '3. Schularbeit',
-            reached: 69,
-            max: 75,
-            percent: 80,
-            grade: 2,
-        },
-        {
-            name: '4. Schularbeit',
-            reached: 50,
-            max: 70,
-            percent: 71.43,
-            grade: 3,
-        },
-        {
-            name: '5. Schularbeit',
-            reached: 3,
-            max: 100,
-            percent: 3,
-            grade: 5,
-        },
-    ],
-    summary: {
-        homework: '1 (1) [10%]',
-        smuep: '2.75 (5, 1, 1, 4) [20%]',
-        tests: '3 (4, 1, 2, 3, 5) [70%]',
-        grade: 2.75,
-        finalGrade: 3,
-    },
 }
 
 // noinspection SpellCheckingInspection

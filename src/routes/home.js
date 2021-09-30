@@ -2,7 +2,7 @@ import { indexURL } from '../common'
 import { demoHomeData, demoToken } from '../demoData'
 
 const fullNameRegex = /<i class="ti-user"><\/i>\s*<p>(.*?)<\/p>/
-const pageRegex = /<div style="font-size: 20px; padding-bottom: 20px;" >(?<classname>.*?)<\/div>.*?Hausübungen.*?Gesamt: <\/strong>(?<hwCount>\d+)<\/div>.*?Erledigt: <\/strong>(?<hwDone>\d+)<\/div>.*?Prozent: <\/strong>(?<hwPercent>[\d.]+)%<\/div>.*?<span style="font-weight: bold; font-size: 20px;">(?<tests>.*?)Gesamtnote(?<summary>.*?)<\/table>/g
+const pageRegex = /<div style="font-size: 20px; padding-bottom: 20px;" >(?<cnShort>.*?) \((?<cnLong>.*?)\)<\/div>.*?Hausübungen.*?Gesamt: <\/strong>(?<hwCount>\d+)<\/div>.*?Erledigt: <\/strong>(?<hwDone>\d+)<\/div>.*?Prozent: <\/strong>(?<hwPercent>[\d.]+)%<\/div>.*?<span style="font-weight: bold; font-size: 20px;">(?<tests>.*?)Gesamtnote(?<summary>.*?)<\/table>/g
 const testRegex = /<div style="font-size: 15px; padding-bottom: 20px;" >(?<typeName>.*?)<\/div>.*?<tbody>(?<items>.*?)<\/tbody>/g
 const testItemRegex = /<tr><td >(?<name>.*?)<\/td><td >(?<reached>\d+?)<\/td><td >(?<max>\d+?)<\/td><td >(?<percent>[\d.]+?)%<\/td>(?:<td >(?<grade>\d+?)<\/td>)?<\/tr>/g
 const gradingHeadersRegex = /<th>(?<name>.*?)<\/th>/g
@@ -56,9 +56,10 @@ function parseTests(tests) {
     return Array.from(tests.matchAll(testRegex)).map(match => match.groups).map(parseTestType)
 }
 
-function parseClassHome({ classname, hwCount, hwDone, hwPercent, tests, summary }) {
+function parseClassHome({ cnShort, cnLong, hwCount, hwDone, hwPercent, tests, summary }) {
     return {
-        name: classname,
+        shortName: cnShort,
+        longName: cnLong,
         homework: {
             count: Number(hwCount),
             done: Number(hwDone),
